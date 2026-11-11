@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
+<title>유튜브 7일 쉐도잉</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+/* layout: 한 줄 공부 노트 — 위 날짜 칩, 아래 그날 카드 한 장 (쉐도잉 → 표현 → 질문 → 스피킹 순서 = 공부 순서) */
+:root{--bg:#f3f5f7;--card:#ffffff;--ink:#14212b;--mute:#5d6b76;--line:#dde3e8;--accent:#0f766e;--accent-soft:#dff3ef;--warm:#c2410c;--warm-soft:#fdeee3;
+--display:"Space Grotesk","Noto Sans KR",system-ui,sans-serif;--body:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f161b;--card:#172129;--ink:#e8eef2;--mute:#97a6b0;--line:#26333c;--accent:#4fd1c0;--accent-soft:#12302d;--warm:#fb923c;--warm-soft:#33200f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f161b;--card:#172129;--ink:#e8eef2;--mute:#97a6b0;--line:#26333c;--accent:#4fd1c0;--accent-soft:#12302d;--warm:#fb923c;--warm-soft:#33200f;color-scheme:dark}
+*{box-sizing:border-box}body{background:var(--bg);color:var(--ink);font:15.5px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1{font:700 26px/1.2 var(--display);letter-spacing:-.4px;margin:0;text-wrap:balance}h2{font:700 18px/1.3 var(--display);margin:0}
+.sub{color:var(--mute);font-size:13.5px;margin:4px 0 0}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.day{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.day b{font:700 15px var(--display)}.day small{font-size:11px;color:var(--mute)}.day[aria-current="true"]{background:var(--accent);border-color:var(--accent);color:#fff}.day[aria-current="true"] small{color:#e6fffb}.day.done b::after{content:" ✓"}
+.day:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;color:var(--mute)}
+.lv{display:inline-flex;gap:3px;vertical-align:middle}.lv i{width:9px;height:9px;border-radius:50%;background:var(--line)}.lv i.on{background:var(--warm)}
+.go{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;background:var(--accent);color:#fff;font-weight:700;border-radius:12px;padding:13px 14px;font-size:15.5px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.toggle{font:inherit;font-size:13px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer}
+ol.lines{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;counter-reset:l}
+ol.lines li{counter-increment:l;display:grid;grid-template-columns:24px minmax(0,1fr);gap:4px 8px}
+ol.lines li::before{content:counter(l);font:700 12px var(--display);color:var(--accent);padding-top:4px}
+.en{font-size:17px;font-weight:500;line-height:1.5}.ko{grid-column:2;font-size:13.5px;color:var(--mute)}.hideko .ko{display:none}
+.note{background:var(--warm-soft);border-radius:12px;padding:10px 12px;font-size:13.5px}
+.ex{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.e{border:1px solid var(--line);border-radius:12px;padding:11px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.e b{font-size:15.5px}.e .k{color:var(--accent);font-weight:700;font-size:13.5px}.e .f,.e .m{font-size:13px;color:var(--mute)}.e .m{color:var(--ink)}
+.e .f span,.e .m span{font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--mute);margin-right:4px}
+details{border:1px solid var(--line);border-radius:12px;padding:10px 12px}summary{cursor:pointer;font-weight:500}details p{margin:8px 0 0;color:var(--mute);font-size:14px}
+.sp{background:var(--accent-soft);border-radius:12px;padding:12px 14px;font-weight:500}
+.done{display:flex;align-items:center;gap:10px;font-weight:700}.done input{width:22px;height:22px;accent-color:var(--accent)}
+.how{font-size:13.5px;color:var(--mute);margin:0}
+@media (prefers-reduced-motion:no-preference){.card{animation:in .25s ease both}@keyframes in{from{transform:translateY(6px)}}}
+.gate{min-height:80vh;display:grid;place-items:center;padding:16px}.gate form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:10px;width:min(360px,100%);text-align:center}.gate input{font:inherit;font-size:22px;text-align:center;letter-spacing:6px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}.gate button{font:inherit;font-weight:700;padding:12px;border:0;border-radius:12px;background:var(--accent);color:#fff}.err{color:var(--warm);min-height:1.2em;margin:0}.back{font-size:13px;color:var(--accent)}[hidden]{display:none!important}body{margin:0}
+</style>
+</head><body>
+<div class="gate" id="gate" hidden><form id="gf"><h1>유튜브 7일 쉐도잉</h1><p class="sub">전광판 비밀번호를 넣어 주세요 (전광판에서 한 번 넣었으면 자동으로 열려요)</p><input id="code" type="password" inputmode="numeric" autocomplete="current-password" aria-label="비밀번호"><button>열기</button><p class="err" id="err"></p></form></div>
+<div class="wrap" id="app" hidden>
+  <header><a class="back" href="./">← 전광판</a><h1>유튜브 7일 쉐도잉</h1><p class="sub" id="how"></p></header>
+  <nav class="days" id="days" aria-label="일차 고르기"></nav>
+  <main id="main"></main>
+</div>
+<script>
+let KIT = null;
+const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+async function openKit(code) { const e = await (await fetch('eng.enc.json?t=' + Date.now(), { cache: 'no-store' })).json();
+  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(e.salt), iterations: e.iter, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(e.iv) }, key, b64(e.data)))); }
+async function go(code, quiet) { try { KIT = await openKit(code); try { localStorage.setItem('mjb_code', code); } catch (e) {} document.getElementById('gate').hidden = true; document.getElementById('app').hidden = false; boot(); return true; } catch (e) { if (!quiet) document.getElementById('err').textContent = '비밀번호가 맞지 않아요'; document.getElementById('gate').hidden = false; return false; } }
+document.getElementById('gf').addEventListener('submit', (e) => { e.preventDefault(); go(document.getElementById('code').value.trim()); });
+let saved = ''; try { saved = localStorage.getItem('mjb_code') || ''; } catch (e) {}
+if (saved) go(saved, true); else document.getElementById('gate').hidden = false;
+function boot() {
+
+const $ = (s, el = document) => el.querySelector(s), esc = (t) => String(t ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+$('#how').textContent = KIT.how_to_ko ? (Array.isArray(KIT.how_to_ko) ? KIT.how_to_ko.join(' · ') : KIT.how_to_ko) : '하루 20분 · 쉐도잉 → 표현 → 질문 → 스피킹 순서';
+const start = new Date(2026, 10, 12), today = Math.floor((new Date() - start) / 864e5) + 1;
+function pick() { const m = location.hash.match(/^#d([1-7])$/); return m ? +m[1] : Math.min(7, Math.max(1, today)); }
+function render() {
+  const n = pick(), D = KIT.days.find((x) => x.day === n) || KIT.days[0];
+  $('#days').innerHTML = KIT.days.map((x) => `<button class="day${store.get('yt7_done_' + x.day) ? ' done' : ''}" aria-current="${x.day === n}" data-d="${x.day}"><b>${x.day}일</b><small>${'●'.repeat(Math.min(3, Math.ceil(x.level / 2.4)))}</small></button>`).join('');
+  const S = D.shadow, url = `https://www.youtube.com/watch?v=${D.id}&t=${Math.floor(S.start)}s`;
+  $('#main').innerHTML = `<section class="card" aria-labelledby="t">
+    <div class="meta"><span>${esc(D.channel)}</span><span>· ${mmss(D.duration_s)}</span><span>· 난이도 <span class="lv" aria-label="${D.level}/7">${Array.from({ length: 7 }, (_, i) => `<i class="${i < D.level ? 'on' : ''}"></i>`).join('')}</span> ${D.level}/7</span><span>· 분당 ${D.level_detail ? D.level_detail.wpm : '-'}단어</span></div>
+    <h2 id="t">${esc(D.title)}</h2><p class="how">${esc(D.summary_ko)}</p>
+    <a class="go" href="${url}" target="_blank" rel="noopener">▶ 쉐도잉 구간 열기 · ${mmss(S.start)}~${mmss(S.end)}</a>
+  </section>
+  <section class="card" id="sh"><div class="row"><h2>1 · 쉐도잉 (5번 따라 말하기)</h2><button class="toggle" id="tg">한국어 숨기기</button></div>
+    <ol class="lines">${S.lines.map((l) => `<li><span class="en">${esc(l.en)}</span><span class="ko">${esc(l.ko)}</span></li>`).join('')}</ol>
+    ${S.note ? `<div class="note">${esc(typeof S.note === 'string' ? S.note : JSON.stringify(S.note))}</div>` : ''}</section>
+  <section class="card"><h2>2 · 오늘 표현 ${D.expressions.length}개</h2><div class="ex">${D.expressions.map((e) => `<div class="e"><b>${esc(e.en)}</b><span class="k">${esc(e.ko)}</span><span class="f"><span>영상</span>${esc(e.from)}</span><span class="m"><span>내 문장</span>${esc(e.mine)}</span></div>`).join('')}</div></section>
+  <section class="card"><h2>3 · 이해 질문</h2>${D.questions.map((q, i) => `<details><summary>${i + 1}. ${esc(q.q)}</summary><p>${esc(q.a)}</p></details>`).join('')}</section>
+  <section class="card"><h2>4 · 스피킹 (IELTS Part 3)</h2><div class="sp">${esc(D.speaking.q)}</div><details><summary>모범 답 보기 (먼저 내 말로 1분 답하고 열기)</summary><p>${esc(D.speaking.answer)}</p></details></section>
+  <section class="card"><label class="done"><input type="checkbox" id="dn" ${store.get('yt7_done_' + n) ? 'checked' : ''}> ${n}일차 끝냈어요</label></section>`;
+  if (store.get('yt7_hideko') === '1') { $('#sh').classList.add('hideko'); $('#tg').textContent = '한국어 보이기'; }
+  $('#tg').onclick = () => { const h = $('#sh').classList.toggle('hideko'); store.set('yt7_hideko', h ? '1' : ''); $('#tg').textContent = h ? '한국어 보이기' : '한국어 숨기기'; };
+  $('#dn').onchange = (ev) => { store.set('yt7_done_' + n, ev.target.checked ? '1' : ''); render(); };
+  $('#days').onclick = (ev) => { const b = ev.target.closest('.day'); if (b) location.hash = 'd' + b.dataset.d; };
+}
+addEventListener('hashchange', render); render();
+}
+
+</script>
+</body></html>

@@ -112,7 +112,7 @@ function render(d) {
   const v = d.naver_visits, vl = v.length ? v[v.length - 1] : null, vch = v.length > 1 ? v[v.length - 1].visitors - v[v.length - 2].visitors : null;
   const posts = d.blogs.reduce((s, r) => s + (r.today || 0), 0), wk = (d.usage.find((u) => u.name === '주간 사용량') || {}).percent;
   const app = document.getElementById('app'); app.replaceChildren();
-  app.append($(`<div class="top"><div class="logo">📋</div><div><h1>MJ 오늘의 전광판</h1><p>${at.getMonth() + 1}월 ${at.getDate()}일 (${WD[at.getDay()]}) ${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')} 기준 · 매시 7분 자동 새로 고침</p></div></div>`));
+  app.append($(`<div class="top"><div class="logo">📋</div><div><h1>MJ 오늘의 전광판</h1><p>${at.getMonth() + 1}월 ${at.getDate()}일 (${WD[at.getDay()]}) ${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')} 기준 · 매시 7분 자동 새로 고침 · <a href="eng.html" style="color:var(--pri);font-weight:800">📚 영어 7일 쉐도잉</a></p></div></div>`));
   // 1111 MJ '셋팅할 것들을 제일 위에 · 할 일들이잖아'
   const T = d.setup || [];
   if (T.length) app.append($(`<section class="card"><div class="hd"><span class="ic c-org">📌</span>MJ 할 일 ${T.length}개<small>"○번 알려줘" → 한 단계씩</small></div><div class="chips">${[...T].sort((x, y) => /🔥/.test(y.what) - /🔥/.test(x.what)).map((t) => `<span class="chip${/🔥/.test(t.what) ? ' hot' : ''}"><b>${t.no}</b>${esc(t.what)}</span>`).join('')}</div></section>`));
