@@ -36,6 +36,10 @@ details{border:1px solid var(--line);border-radius:12px;padding:10px 12px}summar
 .sp{background:var(--accent-soft);border-radius:12px;padding:12px 14px;font-weight:500}
 .done{display:flex;align-items:center;gap:10px;font-weight:700}.done input{width:22px;height:22px;accent-color:var(--accent)}
 .how{font-size:13.5px;color:var(--mute);margin:0}
+.pv{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}.pv iframe,.pv>div{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tip{font-size:12.5px;color:var(--mute);margin:-4px 0 0}.tip b{color:var(--warm)}
+ol.lines li{cursor:pointer;border-radius:10px;padding:6px 6px 6px 2px;margin:-6px -6px -6px -2px;transition:background-color .15s}ol.lines li:hover{background:var(--bg)}ol.lines li.on{background:var(--accent-soft)}ol.lines li.on .en{color:var(--accent)}
+ol.lines li:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
 @media (prefers-reduced-motion:no-preference){.card{animation:in .25s ease both}@keyframes in{from{transform:translateY(6px)}}}
 .gate{min-height:80vh;display:grid;place-items:center;padding:16px}.gate form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:10px;width:min(360px,100%);text-align:center}.gate input{font:inherit;font-size:22px;text-align:center;letter-spacing:6px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}.gate button{font:inherit;font-weight:700;padding:12px;border:0;border-radius:12px;background:var(--accent);color:#fff}.err{color:var(--warm);min-height:1.2em;margin:0}.back{font-size:13px;color:var(--accent)}[hidden]{display:none!important}body{margin:0}
 </style>
@@ -64,6 +68,21 @@ const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
 $('#how').textContent = KIT.how_to_ko ? (Array.isArray(KIT.how_to_ko) ? KIT.how_to_ko.join(' · ') : KIT.how_to_ko) : '하루 20분 · 쉐도잉 → 표현 → 질문 → 스피킹 순서';
 const start = new Date(2026, 10, 12), today = Math.floor((new Date() - start) / 864e5) + 1;
+/* 1112 MJ '문장을 누르면 그 말한 구간이 들리게' — 유튜브 플레이어를 페이지 안에 넣고 문장마다 시작·끝(t,e, 자동 자막 단어 시각으로 맞춤) */
+let YTP = null, ytReady = null, stopAt = 0, onLi = null, tick = 0;
+function ytApi() { return ytReady || (ytReady = new Promise((ok) => { if (window.YT && YT.Player) return ok(); const prev = window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady = () => { if (prev) prev(); ok(); };
+  if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) { const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(sc); } })); }
+function ytMark(li) { if (onLi) onLi.classList.remove('on'); onLi = li; if (li) li.classList.add('on'); }
+function ytMount(D) {
+  try { YTP && YTP.destroy(); } catch (e) {} YTP = null; ytMark(null); clearInterval(tick);
+  ytApi().then(() => { if (!document.getElementById('yt')) return; YTP = new YT.Player('yt', { videoId: D.id, playerVars: { playsinline: 1, rel: 0, start: Math.floor(D.shadow.start) },
+    events: { onError: () => { const t = document.getElementById('tip'); if (t) t.innerHTML = '이 영상은 여기서 재생이 안 돼요 · 위 <b>▶ 쉐도잉 구간 열기</b>로 들어 주세요'; } } }); });
+}
+function ytPlay(t, e, li) {
+  if (!YTP || !YTP.seekTo) return; stopAt = e; ytMark(li); YTP.seekTo(t, true); YTP.playVideo(); clearInterval(tick);
+  tick = setInterval(() => { try { if (YTP.getCurrentTime() >= stopAt) { YTP.pauseVideo(); clearInterval(tick); ytMark(null); } } catch (x) { clearInterval(tick); } }, 120);
+  setTimeout(() => { try { if (YTP.getPlayerState() !== 1 && onLi === li) { const tp = document.getElementById('tip'); if (tp) tp.innerHTML = '소리가 안 나오면 영상의 <b>▶</b>를 한 번 누른 뒤 다시 문장을 눌러 주세요'; } } catch (x) {} }, 1800);
+}
 function pick() { const m = location.hash.match(/^#d([1-7])$/); return m ? +m[1] : Math.min(7, Math.max(1, today)); }
 function render() {
   const n = pick(), D = KIT.days.find((x) => x.day === n) || KIT.days[0];
@@ -75,7 +94,8 @@ function render() {
     <a class="go" href="${url}" target="_blank" rel="noopener">▶ 쉐도잉 구간 열기 · ${mmss(S.start)}~${mmss(S.end)}</a>
   </section>
   <section class="card" id="sh"><div class="row"><h2>1 · 쉐도잉 (5번 따라 말하기)</h2><button class="toggle" id="tg">한국어 숨기기</button></div>
-    <ol class="lines">${S.lines.map((l) => `<li><span class="en">${esc(l.en)}</span><span class="ko">${esc(l.ko)}</span></li>`).join('')}</ol>
+    <div class="pv"><div id="yt"></div></div><p class="tip" id="tip">문장을 누르면 그 말한 구간만 들려요 · 다시 누르면 처음부터</p>
+    <ol class="lines">${S.lines.map((l, i) => `<li role="button" tabindex="0" data-i="${i}" aria-label="${i + 1}번 문장 듣기"><span class="en">${esc(l.en)}</span><span class="ko">${esc(l.ko)}</span></li>`).join('')}</ol>
     ${S.note ? `<div class="note">${esc(typeof S.note === 'string' ? S.note : JSON.stringify(S.note))}</div>` : ''}</section>
   <section class="card"><h2>2 · 오늘 표현 ${D.expressions.length}개</h2><div class="ex">${D.expressions.map((e) => `<div class="e"><b>${esc(e.en)}</b><span class="k">${esc(e.ko)}</span><span class="f"><span>영상</span>${esc(e.from)}</span><span class="m"><span>내 문장</span>${esc(e.mine)}</span></div>`).join('')}</div></section>
   <section class="card"><h2>3 · 이해 질문</h2>${D.questions.map((q, i) => `<details><summary>${i + 1}. ${esc(q.q)}</summary><p>${esc(q.a)}</p></details>`).join('')}</section>
@@ -84,6 +104,10 @@ function render() {
   if (store.get('yt7_hideko') === '1') { $('#sh').classList.add('hideko'); $('#tg').textContent = '한국어 보이기'; }
   $('#tg').onclick = () => { const h = $('#sh').classList.toggle('hideko'); store.set('yt7_hideko', h ? '1' : ''); $('#tg').textContent = h ? '한국어 보이기' : '한국어 숨기기'; };
   $('#dn').onchange = (ev) => { store.set('yt7_done_' + n, ev.target.checked ? '1' : ''); render(); };
+  ytMount(D);
+  const playLine = (li) => { const l = S.lines[+li.dataset.i]; if (l && l.t != null) ytPlay(l.t, l.e, li); };
+  $('#sh ol').onclick = (ev) => { const li = ev.target.closest('li'); if (li) playLine(li); };
+  $('#sh ol').onkeydown = (ev) => { const li = ev.target.closest('li'); if (li && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); playLine(li); } };
   $('#days').onclick = (ev) => { const b = ev.target.closest('.day'); if (b) location.hash = 'd' + b.dataset.d; };
 }
 addEventListener('hashchange', render); render();
