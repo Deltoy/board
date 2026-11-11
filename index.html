@@ -94,6 +94,9 @@ function render(d) {
   const posts = d.blogs.reduce((s, r) => s + (r.today || 0), 0), wk = (d.usage.find((u) => u.name === '주간 사용량') || {}).percent;
   const app = document.getElementById('app'); app.replaceChildren();
   app.append($(`<div class="top"><div class="logo">📋</div><div><h1>MJ 오늘의 전광판</h1><p>${at.getMonth() + 1}월 ${at.getDate()}일 (${WD[at.getDay()]}) ${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')} 기준 · 매시 7분 자동 새로 고침</p></div></div>`));
+  // 1111 MJ '셋팅할 것들을 제일 위에 · 할 일들이잖아'
+  const T = d.setup || [];
+  if (T.length) app.append($(`<section class="card"><div class="hd"><span class="ic c-org">📌</span>MJ 할 일 ${T.length}개<small>"○번 알려줘" → 한 단계씩</small></div><div class="chips">${[...T].sort((x, y) => /🔥/.test(y.what) - /🔥/.test(x.what)).map((t) => `<span class="chip${/🔥/.test(t.what) ? ' hot' : ''}"><b>${t.no}</b>${esc(t.what)}</span>`).join('')}</div></section>`));
   app.append(asks.length
     ? $(`<div class="verdict v-warn"><span class="em">🙋</span><div>MJ가 정해 줄 게 ${asks.length}개 있어요<small>아래 주황 칸부터 보고 텔레그램으로 답해 주세요</small></div></div>`)
     : $(`<div class="verdict v-ok"><span class="em">✅</span><div>다 순조로워요. 정해 줄 건 없어요<small>오늘 해낸 일 ${d.done.length}개 · 남은 예약 ${left.length}개</small></div></div>`));
@@ -132,8 +135,6 @@ function render(d) {
   const W = 640, H = 190, m = 24, bw = (W - 16) / Math.max(1, v.length), mx = Math.max(1, ...v.map((x) => x.visitors));
   const bars = v.map((x, i) => { const h = (H - m - 24) * x.visitors / mx, X = 8 + i * bw + bw * 0.14, last = i === v.length - 1; return `<rect x="${X.toFixed(1)}" y="${(H - m - h).toFixed(1)}" width="${(bw * 0.72).toFixed(1)}" height="${Math.max(2, h).toFixed(1)}" rx="5" fill="${last ? 'var(--pri)' : 'var(--line)'}"><title>${x.date} · ${fmt(x.visitors)}명</title></rect>${last || i % 2 === 0 ? `<text x="${(X + bw * 0.36).toFixed(1)}" y="${H - 6}" text-anchor="middle">${+x.date.slice(8)}일</text>` : ''}${last ? `<text x="${(X + bw * 0.36).toFixed(1)}" y="${(H - m - h - 7).toFixed(1)}" text-anchor="middle" style="fill:var(--pri);font-weight:900;font-size:14px">${fmt(x.visitors)}</text>` : ''}`; }).join('');
   app.append($(`<section class="card chart"><div class="hd"><span class="ic c-green">📈</span>네이버 생활·쇼핑 방문자<small>최근 2주</small></div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="네이버 블로그 최근 2주 날짜별 방문자 막대그래프">${bars}</svg></section>`));
-  const T = d.setup || [];
-  if (T.length) app.append($(`<section class="card"><div class="hd"><span class="ic c-gray">🧰</span>MJ 셋팅할 것<small>"○번 알려줘" → 한 단계씩</small></div><div class="chips">${[...T].sort((x, y) => /🔥/.test(y.what) - /🔥/.test(x.what)).map((t) => `<span class="chip${/🔥/.test(t.what) ? ' hot' : ''}"><b>${t.no}</b>${esc(t.what)}</span>`).join('')}</div></section>`));
   app.append($(`<p class="foot">🔒 이 페이지의 숫자·내용은 암호화돼 있어요</p>`));
 }
 async function go(code, quiet) {
