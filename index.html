@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>MJ 오늘의 전광판</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<!-- 1111 MJ '깃허브에 나만 볼 수 있게' — 암호화된 data.enc.json 을 비밀번호로 풀어서 보여 줌 (공개 저장소지만 비밀번호 없이는 숫자·내용을 못 읽음) -->
+<style>
+:root{--bg:#F5F7FA;--card:#fff;--ink:#101828;--ink2:#475467;--line:#EAECF0;--pri:#155EEF;--ok:#079455;--bad:#D92D20;--warn:#DC6803;--soft:#EEF4FF;--r:20px;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0C111D;--card:#161B26;--ink:#F5F5F6;--ink2:#94969C;--line:#1F242F;--pri:#528BFF;--ok:#47CD89;--bad:#F97066;--warn:#FDB022;--soft:#102A56;color-scheme:dark}}
+[hidden]{display:none!important}*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Pretendard,"Apple SD Gothic Neo",system-ui,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.5px}h2{margin:0 0 10px;font-size:16px;font-weight:800}
+.lede{margin:4px 0 0;color:var(--ink2)}.lede b{color:var(--ink);font-variant-numeric:tabular-nums}.at{font-size:12px;color:var(--ink2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
+.asks{border-left:5px solid var(--warn)}
+.ask{padding:9px 0;border-top:1px solid var(--line)}.ask:first-of-type{border-top:0}.ask b{display:block}.ask small{color:var(--ink2)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile span{font-size:12px;color:var(--ink2)}.tile b{display:block;font-size:32px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;margin:4px 0}.tile small{font-size:12px;color:var(--ink2)}
+.up{color:var(--ok)!important}.down{color:var(--bad)!important}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+ul{list-style:none;margin:0;padding:0}li.row{display:grid;grid-template-columns:3.2em minmax(0,1fr);gap:8px;padding:8px 0;border-top:1px solid var(--line)}li.row:first-child{border-top:0}
+li.row time{color:var(--ink2);font-variant-numeric:tabular-nums}li.row small{display:block;font-size:12px;color:var(--ink2)}li.row a{color:inherit}
+details summary{cursor:pointer;color:var(--ink2);font-size:13px;margin-top:8px}
+.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th{text-align:left;font-size:12px;color:var(--ink2);font-weight:600;padding:4px 10px 6px 0;white-space:nowrap}td{padding:8px 10px 8px 0;border-top:1px solid var(--line);white-space:nowrap}.n{text-align:right}
+.chart svg{display:block;width:100%;height:auto}.chart text{fill:var(--ink2);font-size:11px}
+.gate{min-height:100vh;display:grid;place-items:center;padding:24px}.gate form{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:28px;width:min(360px,100%);display:flex;flex-direction:column;gap:12px;text-align:center}
+.gate input{font:inherit;font-size:22px;text-align:center;letter-spacing:6px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}
+.gate button{font:inherit;font-weight:700;padding:12px;border:0;border-radius:14px;background:var(--pri);color:#fff;cursor:pointer}.err{color:var(--bad);font-size:13px;min-height:1.2em}
+</style></head><body>
+<div id="gate" class="gate"><form id="gf"><h1>🔒 MJ 오늘의 전광판</h1><p class="lede">비밀번호를 넣어 주세요. 이 기기에 기억돼요.</p><input id="code" type="password" inputmode="numeric" autocomplete="current-password" aria-label="비밀번호"><button>열기</button><div class="err" id="err"></div></form></div>
+<div id="app" class="wrap" hidden></div>
+<script>
+const $ = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content.firstChild; };
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = (n) => n == null ? '—' : Number(n).toLocaleString('ko-KR'), sg = (n) => n == null ? '—' : (n > 0 ? '+' : '') + fmt(n), cls = (n) => n > 0 ? 'up' : n < 0 ? 'down' : '';
+const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+async function open(code) {
+  const e = await (await fetch('data.enc.json?t=' + Date.now(), { cache: 'no-store' })).json();
+  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(e.salt), iterations: e.iter, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  const buf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(e.iv) }, key, b64(e.data));
+  return JSON.parse(new TextDecoder().decode(buf));
+}
+function render(d) {
+  const at = new Date(d.at), left = d.schedule.filter((x) => x.state === '남음'), past = d.schedule.filter((x) => x.state !== '남음');
+  const subs = d.youtube.reduce((s, r) => s + (r.subs || 0), 0), subsCh = d.youtube.some((r) => r.subs_change != null) ? d.youtube.reduce((s, r) => s + (r.subs_change || 0), 0) : null;
+  const v = d.naver_visits, vl = v.length ? v[v.length - 1] : null, vch = v.length > 1 ? v[v.length - 1].visitors - v[v.length - 2].visitors : null;
+  const posts = d.blogs.reduce((s, r) => s + (r.today || 0), 0), wk = (d.usage.find((u) => u.name === '주간 사용량') || {}).percent;
+  const li = (t, main, sub, link) => `<li class="row"><time>${esc(t)}</time><div>${sub ? `<small>${esc(sub)}</small>` : ''}${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">${esc(main)}</a>` : esc(main)}</div></li>`;
+  const app = document.getElementById('app'); app.replaceChildren();
+  app.append($(`<header><h1>MJ 오늘의 전광판</h1><p class="lede">오늘 해낸 일 <b>${d.done.length}</b>개 · 남은 예약 <b>${left.length}</b>개 · 결정 기다리는 것 <b>${d.asks.length}</b>개</p><p class="at">마지막 새로 고침 ${at.toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })} · 매시 7분에 자동으로 바뀌어요</p></header>`));
+  app.append($(`<section class="card asks"><h2>MJ 결정 기다리는 것</h2>${d.asks.length ? d.asks.map((a) => `<div class="ask"><b>${esc(a.ask)}</b><small>${esc([a.since, a.why].filter(Boolean).join(' · '))}</small></div>`).join('') : '<p class="lede">지금은 기다리는 질문이 없어요.</p>'}</section>`));
+  app.append($(`<section class="tiles"><div class="card tile"><span>유튜브 구독자 (4개 채널 합)</span><b>${fmt(subs)}</b><small class="${cls(subsCh)}">${subsCh == null ? '어제 기록이 생기면 표시돼요' : sg(subsCh) + ' 어제 대비'}</small></div><div class="card tile"><span>네이버 방문자 (${vl ? +vl.date.slice(5, 7) + '/' + +vl.date.slice(8) : '어제'})</span><b>${fmt(vl && vl.visitors)}</b><small class="${cls(vch)}">${sg(vch)} 전날 대비</small></div><div class="card tile"><span>오늘 올린 블로그 글</span><b>${fmt(posts)}</b><small>블로그 8곳 합</small></div><div class="card tile"><span>클로드 주간 사용량</span><b>${wk == null ? '—' : wk + '%'}</b><small>85% 넘으면 멈춰요</small></div></section>`));
+  app.append($(`<div class="cols"><section class="card"><h2>오늘 해낸 일</h2><ul>${[...d.done].reverse().map((x) => li(x.time, x.what, x.team, x.link)).join('') || li('', '아직 없어요')}</ul></section><section class="card"><h2>오늘 남은 예약</h2><ul>${left.map((x) => li(x.time, x.what)).join('') || li('', '오늘 예약은 다 끝났어요')}</ul><details><summary>이미 지난 예약 ${past.length}개</summary><ul>${past.map((x) => li(x.time, x.what)).join('')}</ul></details></section></div>`));
+  app.append($(`<section class="card"><h2>지금 진행 중인 작업</h2>${d.working.length ? '<ul>' + d.working.map((w) => li(w.progress != null ? Math.round(w.progress) + '%' : '', w.what, w.team)).join('') + '</ul>' : '<p class="lede">지금 오래 걸리는 작업은 없어요.</p>'}</section>`));
+  app.append($(`<section class="card"><h2>유튜브 채널</h2><div class="scroll"><table><thead><tr><th>채널</th><th class="n">구독</th><th class="n">어제 대비</th><th class="n">총 조회</th><th class="n">어제 대비</th><th class="n">영상</th></tr></thead><tbody>${d.youtube.map((r) => `<tr><td>${esc(r.channel)}</td><td class="n">${fmt(r.subs)}</td><td class="n ${cls(r.subs_change)}">${sg(r.subs_change)}</td><td class="n">${fmt(r.views)}</td><td class="n ${cls(r.views_change)}">${sg(r.views_change)}</td><td class="n">${fmt(r.videos)}</td></tr>`).join('')}</tbody></table></div><p class="at">AI 작업실 채널은 아직 빠져 있어요. 어제 대비는 하루 첫 기록과 비교해요.</p></section>`));
+  const W = 640, H = 200, m = 26, bw = (W - 16) / Math.max(1, v.length), mx = Math.max(1, ...v.map((x) => x.visitors));
+  const bars = v.map((x, i) => { const h = (H - m - 22) * x.visitors / mx, X = 8 + i * bw + bw * 0.15, last = i === v.length - 1; return `<rect x="${X.toFixed(1)}" y="${(H - m - h).toFixed(1)}" width="${(bw * 0.7).toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${last ? 'var(--pri)' : 'var(--line)'}"><title>${x.date} · ${fmt(x.visitors)}명</title></rect>${last || i % 2 === 0 ? `<text x="${(X + bw * 0.35).toFixed(1)}" y="${H - 8}" text-anchor="middle">${+x.date.slice(8)}일</text>` : ''}${last ? `<text x="${(X + bw * 0.35).toFixed(1)}" y="${(H - m - h - 6).toFixed(1)}" text-anchor="middle" style="fill:var(--ink);font-weight:700">${fmt(x.visitors)}</text>` : ''}`; }).join('');
+  app.append($(`<section class="card chart"><h2>네이버 생활·쇼핑 블로그 방문자 (최근 2주)</h2><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="네이버 블로그 최근 2주 날짜별 방문자 막대그래프">${bars}</svg></section>`));
+  app.append($(`<section class="card"><h2>블로그별 글 수</h2><div class="scroll"><table><thead><tr><th>블로그</th><th class="n">전체 글</th><th class="n">오늘</th></tr></thead><tbody>${d.blogs.map((r) => `<tr><td>${esc(r.blog)}</td><td class="n">${fmt(r.posts)}</td><td class="n">${fmt(r.today)}</td></tr>`).join('')}</tbody></table></div></section>`));
+}
+async function go(code, quiet) {
+  try { const d = await open(code); try { localStorage.setItem('mjb_code', code); } catch (e) {} document.getElementById('gate').hidden = true; document.getElementById('err').textContent = ''; document.getElementById('app').hidden = false; render(d); return true; }
+  catch (e) { if (!quiet) document.getElementById('err').textContent = '비밀번호가 맞지 않아요'; try { localStorage.removeItem('mjb_code'); } catch (e2) {} return false; }
+}
+document.getElementById('gf').addEventListener('submit', (e) => { e.preventDefault(); go(document.getElementById('code').value.trim()); });
+let saved = ''; try { saved = localStorage.getItem('mjb_code') || ''; } catch (e) {}
+if (saved) go(saved, true);
+setInterval(() => { let c = ''; try { c = localStorage.getItem('mjb_code') || ''; } catch (e) {} if (c && !document.hidden) go(c, true); }, 10 * 60e3);   // 열어 둔 채면 10분마다 새로
+</script>
+</body></html>
