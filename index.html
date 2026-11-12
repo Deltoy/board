@@ -110,6 +110,7 @@ details summary{cursor:pointer;color:var(--mute);font-size:13px;font-weight:600;
 <div id="gate" class="gate"><form id="gf"><div class="logo">📋</div><h1>MJ 오늘의 전광판</h1><p>비밀번호를 넣어 주세요. 이 기기에 기억돼요.</p><input id="code" type="password" inputmode="numeric" autocomplete="current-password" aria-label="비밀번호"><button>열기</button><div class="err" id="err"></div></form></div>
 <div id="app" class="wrap" hidden></div>
 <script>
+window.MOB = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);   // 1112 시작 버튼: 폰=t.me · PC·맥=tg://
 const $ = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content.firstChild; };
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (n) => n == null ? '—' : Number(n).toLocaleString('ko-KR'), sg = (n) => n == null ? '' : (n > 0 ? '▲ ' : n < 0 ? '▼ ' : '') + fmt(Math.abs(n)), ud = (n) => n > 0 ? 'up' : n < 0 ? 'down' : '';
@@ -135,7 +136,7 @@ function render(d) {
     ? $(`<div class="verdict v-warn"><span class="em">🙋</span><div>MJ가 정해 줄 게 ${asks.length}개 있어요<small>아래 주황 칸부터 보고 텔레그램으로 답해 주세요</small></div></div>`)
     : $(`<div class="verdict v-ok"><span class="em">✅</span><div>다 순조로워요. 정해 줄 건 없어요<small>오늘 해낸 일 ${d.done.length}개 · 남은 예약 ${left.length}개</small></div></div>`));
   app.append($(`<div class="pills"><div class="pill p-done"><b class="num pop">${d.done.length}</b><span>✅ 오늘 해낸 일</span></div><div class="pill p-left"><b class="num pop">${left.length}</b><span>⏰ 남은 예약</span></div><div class="pill p-ask"><b class="num pop">${asks.length}</b><span>🙋 정해 줄 것</span></div></div>`));
-  if (asks.length) app.append($(`<section class="card asks"><div class="hd"><span class="ic c-org">🙋</span>MJ가 정해 주세요</div>${asks.map((a, i) => { const t = '▶ 시작: ' + a.ask; return `<div class="ask"><i>${i + 1}</i><div><b>${esc(a.ask)}</b><small>${esc([a.since, a.why].filter(Boolean).join(' · '))}</small></div>${d.bot ? `<a class="go" href="https://t.me/${esc(d.bot)}?text=${encodeURIComponent(t)}" target="_blank" rel="noopener" data-t="${esc(t)}" aria-label="${esc(a.ask)} 시작 — 텔레그램으로 한 단계씩 안내">▶ 시작</a>` : ''}</div>`; }).join('')}</section>`));
+  if (asks.length) app.append($(`<section class="card asks"><div class="hd"><span class="ic c-org">🙋</span>MJ가 정해 주세요</div>${asks.map((a, i) => { const t = '▶ 시작: ' + a.ask; return `<div class="ask"><i>${i + 1}</i><div><b>${esc(a.ask)}</b><small>${esc([a.since, a.why].filter(Boolean).join(' · '))}</small></div>${d.bot ? `<a class="go" href="${MOB ? `https://t.me/${esc(d.bot)}?text=${encodeURIComponent(t)}` : `tg://resolve?domain=${esc(d.bot)}&text=${encodeURIComponent(t)}`}"${MOB ? ' target="_blank" rel="noopener"' : ''} data-t="${esc(t)}" aria-label="${esc(a.ask)} 시작 — 텔레그램으로 한 단계씩 안내">▶ 시작</a>` : ''}</div>`; }).join('')}</section>`));
   const CAP = d.capacity; if (CAP) { const CP = CAP;   // 1112 MJ '한계를 명확히 — 지금 몇 개 · 몇 개 늘릴 수 있는지'
     const tot = CP.channels.reduce((a, c) => a + c.n, 0), nx = (CP.next || []).reduce((a, c) => a + c.n, 0), sub = (t) => `<small style="display:block;font-weight:600;color:var(--mute);font-size:12px">${t}</small>`;
     const ac = (CP.accts || []).map((a) => `${a.n}번 ${a.week == null ? '기록 대기' : a.week + '%'}`).join(' · ');
@@ -233,6 +234,9 @@ document.getElementById('gf').addEventListener('submit', (e) => { e.preventDefau
 let saved = ''; try { saved = localStorage.getItem('mjb_code') || ''; } catch (e) {}
 if (saved) go(saved, true);
 setInterval(() => { let c = ''; try { c = localStorage.getItem('mjb_code') || ''; } catch (e) {} if (c && !document.hidden) go(c, true); }, 10 * 60e3);
+</script>
+<script>/* 1112 MJ 'PC·맥에선 텔레그램 프로그램이 늘 열려 있으니 거기서 바로' → 폰 = t.me(앱으로 넘어감), PC·맥 = tg:// (데스크톱 텔레그램 앱이 바로 열림) */
+window.MOB = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 </script>
 <script>/* 1112 시작 버튼: 텔레그램이 글을 미리 못 넣는 폰이면 붙여 넣기만 하면 되게 복사 */
 document.addEventListener('click', (e) => { const g = e.target.closest && e.target.closest('.ask .go'); if (!g) return; try { navigator.clipboard && navigator.clipboard.writeText(g.dataset.t); } catch (x) {} });
