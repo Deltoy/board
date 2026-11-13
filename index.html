@@ -72,15 +72,33 @@ details summary{cursor:pointer;color:var(--mute);font-size:13px;font-weight:600;
 .rvc svg{display:block;width:100%;height:auto}.rvc text{fill:var(--mute);font-size:17px}
 .bgh{display:flex;align-items:baseline;gap:8px;font-weight:900;font-size:14.5px;margin:12px 0 2px;padding-top:10px;border-top:2px solid var(--line)}.bgh:first-of-type{margin-top:0;padding-top:0;border-top:0}.bgh small{margin-left:auto;font-size:12px;color:var(--mute);font-weight:700}
 .lg{font-style:normal;font-size:11px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--pri-soft);color:var(--pri);margin-right:6px;vertical-align:1px}
-.mp{display:grid;grid-template-columns:minmax(86px,1.3fr) repeat(4,minmax(0,1fr));gap:4px}
-.mh{font-size:12px;font-weight:800;color:var(--mute);text-align:center;padding-bottom:2px}.mt{font-size:13px;font-weight:800;display:flex;align-items:center;line-height:1.25;word-break:keep-all}
-.mc{border-radius:10px;padding:6px 3px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0}.mc b{font-size:12.5px;font-weight:900;white-space:nowrap}
-.m-on{background:var(--ok-soft);color:var(--ok)}.m-plan{background:var(--pri-soft);color:var(--pri)}.m-plan.late{background:var(--bad-soft);color:var(--bad)}.m-todo{background:var(--org-soft);color:var(--org);outline:1.5px dashed var(--org);outline-offset:-2px}.m-na{background:var(--tray);color:var(--mute);opacity:.55}
-.pp{display:flex;gap:3px}.pp i{width:8px;height:8px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--c) 30%,transparent)}.pp i.on{background:var(--c);border-color:var(--c)}.pp i.wait{border:1.5px dashed var(--org)}
-.mlg{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:11.5px;font-weight:700;color:var(--mute);margin:-4px 0 10px}.mlg em{font-style:normal;padding:1px 6px;border-radius:6px}.mlg i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:4px}
-.mnx{margin-top:10px;background:var(--pri-soft);border-radius:12px;padding:10px 12px;font-size:13.5px;font-weight:800}.mnx small{display:block;font-size:12px;color:var(--mute);font-weight:600}
-.mpg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 10px}.mpg>div{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;font-size:12.5px;font-weight:800}.mpg .bar{margin:0;height:10px}.mpg .bar i{background:var(--ok)}.mpg b{font-variant-numeric:tabular-nums}
-.mmj{margin-top:10px;border:2px solid var(--org);background:var(--org-soft);border-radius:14px;padding:10px 12px}.mmj>b{display:block;font-size:13.5px;color:var(--org);margin-bottom:8px}.mmj .chip{background:var(--card);font-size:12.5px}.mmj .chip b{color:var(--org)}
+/* 1113 MJ '채울 칸 지도 — 뭐가 어떻게 되고 있는지 눈에 잘 안 띄어' → 판정 줄·칸 구성 막대·밀린 칸·MJ 차례·칸마다 글자 상태·SNS 개수 */
+.mv{border-radius:14px;padding:12px 14px;font-weight:900;font-size:15.5px;line-height:1.35;margin-bottom:12px}.mv small{display:block;font-size:12.5px;font-weight:700;opacity:.88;margin-top:3px}.mv.ok{background:var(--ok-soft);color:var(--ok)}.mv.bad{background:var(--bad-soft);color:var(--bad)}
+.msh{display:flex;align-items:baseline;gap:8px;font-size:13.5px;font-weight:800;margin-bottom:6px}.msh b{margin-left:auto;font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}
+.msb{display:flex;gap:2px;height:14px;border-radius:8px;overflow:hidden;background:var(--line)}.msb i{display:block;height:100%;min-width:6px}
+.mlg{display:flex;flex-wrap:wrap;gap:4px 14px;margin:8px 0 12px;font-size:12.5px;font-weight:700;color:var(--mute)}.mlg span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c);margin-right:5px;vertical-align:-1px}.mlg b{color:var(--ink);font-variant-numeric:tabular-nums;margin-left:3px}
+.mlate{border:2px solid var(--bad);background:var(--bad-soft);border-radius:14px;padding:10px 12px;margin-bottom:12px}.mlate>b{display:block;color:var(--bad);font-size:14px}
+.mrow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;padding:8px 0;border-top:1px dashed color-mix(in srgb,var(--bad) 35%,transparent)}.mlate>b+.mrow{border-top:0}
+.mrow .mb{font-size:12px;font-weight:900;padding:4px 9px;border-radius:999px;background:var(--bad);color:#fff;white-space:nowrap}.mrow b{display:block;font-size:14px}.mrow small{display:block;font-size:12.5px;color:var(--mute);font-weight:600}
+.mmj{border:2px solid var(--org);background:var(--org-soft);border-radius:14px;padding:10px 12px;margin-bottom:14px}.mmj>b{display:block;font-size:14px;color:var(--org)}.mmj>small{display:block;font-size:12.5px;color:var(--mute);font-weight:700;margin:1px 0 8px}
+.mmj ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px}.mmj li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center;background:var(--card);border-radius:12px;padding:8px 10px}
+.mmj li i{font-style:normal;width:30px;height:30px;border-radius:50%;background:var(--org);color:#fff;display:grid;place-items:center;font-weight:900;font-size:13px}.mmj li b{display:block;font-size:14px}.mmj li small{display:block;font-size:12px;color:var(--mute);font-weight:600}
+.mkey{margin:0 0 6px;font-size:12px;font-weight:700;color:var(--mute)}
+.mp{display:grid;grid-template-columns:minmax(76px,1.25fr) repeat(4,minmax(0,1fr));gap:4px}
+.mh{font-size:12px;font-weight:800;color:var(--mute);text-align:center;padding-bottom:2px}.mt{font-size:13px;font-weight:800;display:flex;align-items:center;line-height:1.25;word-break:keep-all;overflow-wrap:anywhere;min-width:0}
+.mc{border-radius:10px;padding:6px 2px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;min-height:48px;line-height:1.2}
+.mc b{font-size:13px;font-weight:900;white-space:nowrap}.mc small{font-size:11px;font-weight:700;white-space:nowrap}.mc em{font-style:normal;font-size:11px;font-weight:800;white-space:nowrap;margin-top:2px}
+.k-on{background:var(--ok-soft);color:var(--ok)}.k-today{background:var(--pri);color:#fff}.k-soon{background:var(--pri-soft);color:var(--pri)}.k-late{background:var(--bad);color:#fff}
+.k-hold{background:var(--tray);color:var(--mute)}.k-todo{background:var(--org-soft);color:var(--org);outline:1.5px dashed var(--org);outline-offset:-2px}.k-na{border:1px dashed var(--line);color:color-mix(in srgb,var(--mute) 70%,transparent)}
+.msns{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.msns>b{display:block;font-size:14.5px;font-weight:900}.msns>small{display:block;font-size:12.5px;color:var(--mute);font-weight:700}
+.mpf{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:8px 0 0}.mpf div{background:var(--tray);border-radius:12px;padding:6px 2px;text-align:center;font-size:12px;font-weight:700;color:var(--mute);min-width:0}
+.mpf b{display:block;font-size:20px;font-weight:900;color:var(--ink);line-height:1.2;font-variant-numeric:tabular-nums}.mpf .z b{color:var(--mute)}.mpf em{display:block;font-style:normal;font-size:11px;font-weight:800;color:var(--org)}
+.msns ul{list-style:none;margin:6px 0 0;padding:0}.msns li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13px;font-weight:700}.msns li:first-child{border-top:0}.msns li span{text-align:right}.msns li em{font-style:normal;color:var(--org);display:block;font-size:12px}
+/* 1113 MJ '오른쪽에 캐나다 밴쿠버 현재 시간도' */
+.vclk{margin-left:auto;flex:none;text-align:right;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 12px;box-shadow:var(--sh);line-height:1.3}.vclk span,.vclk small{display:block;font-size:11.5px;font-weight:700;color:var(--mute)}.vclk b{display:block;font-size:16px;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
+.top>div:nth-child(2){flex:1;min-width:0}
+@media (min-width:700px){.mc b{font-size:15px}.mc small,.mc em{font-size:12px}}
+@media (max-width:600px){.top{flex-wrap:wrap}.vclk{flex:1 1 100%;margin-left:0;display:flex;align-items:baseline;gap:8px;text-align:left;padding:7px 12px}.vclk span,.vclk small{display:inline;white-space:nowrap}.vclk b{font-size:15px}.vclk small{margin-left:auto}}
 .fund{border-radius:16px;padding:12px 14px;margin-bottom:10px;background:linear-gradient(135deg,var(--pri-soft),var(--ok-soft))}.fund .t{display:flex;align-items:baseline;gap:8px;font-weight:900;font-size:15px}.fund .t small{margin-left:auto;font-size:12px;color:var(--mute);font-weight:700}
 .fund .fb{position:relative;height:16px;border-radius:10px;background:var(--card);margin:10px 0 6px;overflow:visible}.fund .fb i{display:block;height:100%;border-radius:10px;background:linear-gradient(90deg,#4d8dff,#15b86a);min-width:16px}.fund .fb em{position:absolute;right:-4px;top:-9px;font-style:normal;font-size:24px}
 .fund .m{font-size:12.5px;font-weight:700;color:var(--mute)}.fund .m b{color:var(--ink);font-variant-numeric:tabular-nums}
@@ -122,6 +140,11 @@ async function open(code) {
   return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(e.iv) }, key, b64(e.data))));
 }
 const WD = ['일', '월', '화', '수', '목', '금', '토'];
+// 1113 MJ '오른쪽에 캐나다 밴쿠버 현재 시간도' — 브라우저가 계산(서머타임 자동), 30초마다
+const wall = (tz, t) => { const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' }).formatToParts(t).map((x) => [x.type, +x.value])); return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute); };
+function vclock() { const el = document.getElementById('vclk'); if (!el) return; const t = new Date(), w = new Date(wall('America/Vancouver', t)), h = w.getUTCHours(), gap = Math.round((wall('Asia/Seoul', t) - w) / 36e5);
+  el.innerHTML = `<span>🇨🇦 밴쿠버 지금</span><b>${w.getUTCMonth() + 1}/${w.getUTCDate()}(${WD[w.getUTCDay()]}) ${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${String(w.getUTCMinutes()).padStart(2, '0')}</b><small>한국보다 ${gap}시간 느려요</small>`; }
+setInterval(vclock, 30e3);
 function render(d) {
   const at = new Date(d.at), left = d.schedule.filter((x) => x.state === '남음'), past = d.schedule.filter((x) => x.state !== '남음'), asks = d.asks || [];
   const s2h = d.youtube.some((r) => r.subs_2h != null) ? d.youtube.reduce((s, r) => s + (r.subs_2h || 0), 0) : null, VT0 = d.visits_today || null;   // 1112 MJ '2시간에 한 번 수치 변화·구독자 변화'
@@ -129,7 +152,7 @@ function render(d) {
   const v = d.naver_visits, vl = v.length ? v[v.length - 1] : null, vch = v.length > 1 ? v[v.length - 1].visitors - v[v.length - 2].visitors : null;
   const posts = d.blogs.reduce((s, r) => s + (r.today || 0), 0), wk = (d.usage.find((u) => u.name === '주간 사용량') || {}).percent, wkR = (() => { const r = (d.usage.find((u) => u.name === '주간 사용량') || {}).reset; if (!r) return ''; const t = new Date(r * 1000 + 9 * 36e5); return ` · 리셋 ${t.getUTCMonth() + 1}/${t.getUTCDate()}(${'일월화수목금토'[t.getUTCDay()]}) ${t.getUTCHours() < 12 ? '오전' : '오후'} ${t.getUTCHours() % 12 || 12}시`; })();   // 1113 MJ '주간 사용량 언제 리셋되는지도 여기에'
   const root = document.getElementById('app'), app = document.createElement('div'); root.replaceChildren(app); app.className = 'tabp';   // app = 전광판 칸 (1112 댓글 칸과 탭으로 나눔)
-  root.prepend($(`<div class="top"><div class="logo">📋</div><div><h1>MJ 오늘의 전광판</h1><p>${at.getMonth() + 1}월 ${at.getDate()}일 (${WD[at.getDay()]}) ${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')} 기준 · 매시 7분 자동 새로 고침 · <a href="eng.html" style="color:var(--pri);font-weight:800">📚 영어 7일 쉐도잉</a></p></div></div>`));
+  root.prepend($(`<div class="top"><div class="logo">📋</div><div><h1>MJ 오늘의 전광판</h1><p>${at.getMonth() + 1}월 ${at.getDate()}일 (${WD[at.getDay()]}) ${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')} 기준 · 매시 7분 자동 새로 고침 · <a href="eng.html" style="color:var(--pri);font-weight:800">📚 영어 7일 쉐도잉</a></p></div><div class="vclk" id="vclk" aria-live="off"></div></div>`)); vclock();
   // 1111 MJ '셋팅할 것들을 제일 위에 · 할 일들이잖아'
   const T = d.setup || [];
   if (T.length) app.append($(`<section class="card"><div class="hd"><span class="ic c-org">📌</span>MJ 할 일 ${T.length}개<small>"○번 알려줘" → 한 단계씩</small></div><div class="chips">${[...T].sort((x, y) => /🔥/.test(y.what) - /🔥/.test(x.what)).map((t) => `<span class="chip${/🔥/.test(t.what) ? ' hot' : ''}"><b>${t.no}</b>${esc(t.what)}</span>`).join('')}</div></section>`));
@@ -190,15 +213,37 @@ function render(d) {
   app.append($(`<div class="cols"><section class="card"><div class="hd"><span class="ic c-green">✅</span>오늘 해낸 일<small>${d.done.length}개</small></div><ul class="tl">${[...d.done].reverse().map((x) => li(x.time, x.what, x.team, x.link, 1)).join('') || li('', '아직 없어요')}</ul></section><section class="card"><div class="hd"><span class="ic c-blue">⏰</span>남은 예약<small>${left.length}개</small></div>${nx ? `<div class="next"><b>${esc(nx.time)}</b><div>${esc(nx.what)}<small>다음 차례</small></div></div>` : '<div class="next"><div>오늘 예약은 다 끝났어요 🌙</div></div>'}<ul class="tl">${left.slice(1).map((x) => li(x.time, x.what)).join('')}</ul><details><summary>✓ 끝난 예약 ${past.length}개 (눌러서 보기)</summary><ul class="tl">${past.map((x) => li(x.time, x.what, '', '', 1)).join('')}</ul></details></section></div>`));
   if ((d.working || []).length) app.append($(`<section class="card"><div class="hd"><span class="ic c-yel">⏳</span>지금 진행 중</div><ul class="tl">${d.working.map((w) => li(w.progress != null ? Math.round(w.progress) + '%' : '', w.what, w.team)).join('')}</ul></section>`));
   // 1111 MJ '어떤 카테고리에 어느 나라를 더 채워야 하는지 가시적으로 · 운동도 · 인스타·스레드·X·틱톡까지 다 채워 갈 것'
+  // 1113 MJ '뭐가 어떻게 되고 있는지 눈에 잘 안 띄어, 가독성 있게' → 판정 줄 + 칸 구성 막대 + 밀린 칸·MJ 차례 + 칸마다 글자 상태 + SNS 개수(점 5개 없앰). ⏸ 멈춘 칸 = collect.mjs hold
   const BM = d.blogmap;
   if (BM && BM.rows.length) {
-    const PC = { 유튜브: '#ef4444', 인스타: '#e1306c', 스레드: 'var(--ink)', X: '#64748b', 틱톡: '#14b8a6' }, all = BM.rows.flatMap((r) => r.cells), on = all.filter((c) => c.st === 'on').length, need = all.filter((c) => c.st !== 'na').length, sOn = all.reduce((t, c) => t + (c.sns || []).filter((v) => v === 'on').length, 0), sNeed = need * BM.platforms.length;
-    const plans = BM.rows.flatMap((r) => r.cells.map((c, i) => ({ ...c, topic: r.topic, col: BM.cols[i] }))).filter((c) => c.st === 'plan').sort((a, b) => a.late === b.late ? (+a.date.split('/')[0] * 40 + +a.date.split('/')[1]) - (+b.date.split('/')[0] * 40 + +b.date.split('/')[1]) : a.late ? -1 : 1), nx0 = plans[0], nxs = nx0 ? plans.filter((c) => c.date === nx0.date) : [];
-    const ce = (c) => `<div class="mc m-${c.st}${c.late ? ' late' : ''}"><b>${c.st === 'on' ? '✅' + (c.posts != null ? ' ' + fmt(c.posts) : '') : c.st === 'plan' ? c.date : c.st === 'todo' ? '＋' : '—'}</b><span class="pp">${(c.sns || []).map((v, k) => `<i class="${v}" style="--c:${PC[BM.platforms[k]] || 'var(--mute)'}" title="${esc(BM.platforms[k])}"></i>`).join('')}</span></div>`;
-    app.append($(`<section class="card"><div class="hd"><span class="ic c-green">🗺️</span>채울 칸 지도<small>목표 = 모든 칸 채우기</small></div><div class="mpg"><div><span>✍️ 블로그</span><div class="bar"><i style="width:${(100 * on / Math.max(1, need)).toFixed(0)}%"></i></div><b>${on}/${need}</b></div><div><span>📱 SNS</span><div class="bar"><i style="width:${(100 * sOn / Math.max(1, sNeed)).toFixed(0)}%"></i></div><b>${sOn}/${sNeed}</b></div></div>
-      <div class="mlg"><em class="m-on">✅ 글 수</em><em class="m-plan">📅 만들 날</em><em class="m-todo">＋ 채울 곳</em><em class="m-na">— 안 함</em>${BM.platforms.map((p) => `<span><i style="--c:${PC[p] || 'var(--mute)'}"></i>${esc(p)}</span>`).join('')}<span>점선 = MJ 계정 대기</span></div>
-      <div class="mp"><div></div>${BM.cols.map((c) => `<div class="mh">${esc(c)}</div>`).join('')}${BM.rows.map((r) => `<div class="mt">${esc(r.topic)}</div>${r.cells.map(ce).join('')}`).join('')}</div>
-      ${(BM.mj || []).length ? `<div class="mmj"><b>🙋 MJ 차례 — 이것만 해 주면 칸이 채워져요</b><div class="chips">${BM.mj.map((m) => `<span class="chip"><b>${m.no != null ? m.no : '·'}</b>${esc(m.what)}</span>`).join('')}</div></div>` : ''}${nx0 ? `<div class="mnx">👉 다음 채울 칸(제 차례): ${esc(nx0.date)} ${[...new Set(nxs.map((c) => c.topic))].map(esc).join(', ')} · ${nxs.map((c) => esc(c.col)).join('·')}<small>칸 하나 = 블로그(글자) + 점 5개(유튜브·인스타·스레드·X·틱톡). 색 칠한 점 = 이미 있음</small></div>` : ''}</section>`));
+    const HOLD = '맥 미니 후', day = (s) => { const [m, dd] = s.split('/'); return Math.round((Date.parse(`${d.today.slice(0, 4)}-${m.padStart(2, '0')}-${dd.padStart(2, '0')}`) - Date.parse(d.today)) / 864e5); };
+    const kind = (c) => c.st !== 'plan' ? c.st : c.hold ? 'hold' : day(c.date) < 0 ? 'late' : day(c.date) === 0 ? 'today' : 'soon';
+    const all = BM.rows.flatMap((r) => r.cells.map((c, i) => ({ ...c, k: kind(c), topic: r.topic, col: BM.cols[i] }))), K = (k) => all.filter((c) => c.k === k);
+    const need = all.filter((c) => c.k !== 'na').length, on = K('on').length, late = K('late'), now = K('today'), soon = K('soon').sort((a, b) => day(a.date) - day(b.date)), hold = K('hold').length, todo = K('todo').length;
+    const tp = (cs) => [...new Set(cs.map((c) => c.topic))].join(', '), cl = (cs) => cs.map((c) => c.col).join('·'), nx = soon.filter((c) => c.date === (soon[0] || {}).date);
+    const grp = (cs) => Object.values(cs.reduce((g, c) => { (g[c.topic + c.date] ||= { topic: c.topic, date: c.date, cols: [] }).cols.push(c.col); return g; }, {}));
+    const V = late.length ? ['bad', `🔴 밀린 칸 ${late.length}개 — 오늘 먼저 채울게요`, '아래 빨간 목록 순서대로 · 제 차례']
+      : on === need ? ['ok', '🎉 블로그 칸을 다 채웠어요!', `${need}칸 전부 운영 중`]
+      : now.length ? ['ok', `🟢 밀린 칸 없어요 · 오늘 ${tp(now)} ${now.length}칸 열어요`, `${cl(now)} 블로그 · 제 차례`, `🔥 다 열면 운영 ${on}칸 → ${on + now.length}칸`]
+      : nx.length ? ['ok', `🟢 밀린 칸 없어요 · 다음은 ${nx[0].date} ${tp(nx)}`, `${cl(nx)} 블로그 · 제 차례`]
+      : ['ok', '🟢 밀린 칸 없어요', hold ? `남은 ${hold}칸은 ${HOLD} 다시 시작해요` : '새 칸이 생기면 여기 떠요'];
+    const SEG = [['운영 중', 'var(--ok)', on], ['곧 시작', 'var(--pri)', now.length + soon.length], ['밀림', 'var(--bad)', late.length], ['날짜 미정', 'var(--org)', todo], [`멈춤(${HOLD})`, 'color-mix(in srgb,var(--mute) 45%,var(--card))', hold]];
+    const LB = { on: (c) => [c.posts != null ? fmt(c.posts) + '글' : '✅', '운영 중'], today: () => ['오늘', '시작'], soon: (c) => [c.date, '시작 예정'], late: (c) => ['밀림', c.date + ' 예정'], hold: () => ['', '⏸ 멈춤'], todo: () => ['＋', '날짜 미정'], na: () => ['', '안 함'] };
+    const ce = (c) => { const [a, b] = LB[c.k](c), n = (c.sns || []).filter((v) => v === 'on').length, w = (c.sns || []).filter((v) => v === 'wait').length; return `<div class="mc k-${c.k}">${a ? `<b>${esc(a)}</b>` : ''}<small>${esc(b)}</small>${n || w ? `<em>${n ? '📱' + n : ''}${n && w ? ' ' : ''}${w ? '⏳' + w : ''}</em>` : ''}</div>`; };
+    const PF = BM.platforms, sOn = PF.map((_, k) => all.filter((c) => (c.sns || [])[k] === 'on').length), sW = PF.map((_, k) => all.filter((c) => (c.sns || [])[k] === 'wait').length), sT = sOn.reduce((a, b) => a + b, 0), wT = sW.reduce((a, b) => a + b, 0), zero = PF.filter((_, k) => !sOn[k]);
+    const where = all.filter((c) => (c.sns || []).some(Boolean)), pl = (c, v) => PF.filter((_, k) => c.sns[k] === v).join('·');
+    app.append($(`<section class="card"><div class="hd"><span class="ic c-green">🗺️</span>채울 칸 지도<small>목표 = 모든 칸 채우기</small></div>
+      <div class="mv ${V[0]}">${esc(V[1])}<small>${esc(V[2])}</small>${V[3] ? `<small>${esc(V[3])}</small>` : ''}</div>
+      <div class="msh">✍️ 블로그 ${need}칸 중 ${on}칸 운영 중<b>${Math.round(100 * on / Math.max(1, need))}%</b></div>
+      <div class="msb" role="img" aria-label="${SEG.map((x) => x[0] + ' ' + x[2]).join(', ')}">${SEG.filter((x) => x[2]).map((x) => `<i style="flex:${x[2]};background:${x[1]}"></i>`).join('')}</div>
+      <div class="mlg">${SEG.filter((x) => x[2] || x[0] === '밀림').map((x) => `<span style="--c:${x[1]}">${esc(x[0])}<b>${x[2]}</b></span>`).join('')}</div>
+      ${late.length ? `<div class="mlate"><b>🔴 밀린 칸 — 제 차례</b>${grp(late).map((g) => `<div class="mrow"><span class="mb">${-day(g.date)}일 밀림</span><div><b>${esc(g.topic)} · ${g.cols.map(esc).join('·')}</b><small>${esc(g.date)} 시작 예정이었어요 → 블로그 열고 첫 글 3개</small></div></div>`).join('')}</div>` : ''}
+      ${(BM.mj || []).length ? `<div class="mmj"><b>🙋 MJ 차례 — 이것만 만들어 주면 칸이 채워져요</b><small>텔레그램에 "○번 알려줘" → 한 단계씩 안내해요</small><ol>${BM.mj.map((m) => `<li><i>${m.no != null ? m.no : '·'}</i><div><b>${esc(m.what)} 만들기</b><small>→ ${esc(m.topic)} · ${esc(m.col)} SNS 칸</small></div></li>`).join('')}</ol></div>` : ''}
+      <p class="mkey">칸 = 블로그 상태 · 📱 SNS 계정 수 · ⏳ MJ 계정 대기</p>
+      <div class="mp"><div></div>${BM.cols.map((c) => `<div class="mh">${esc(c)}</div>`).join('')}${BM.rows.map((r, ri) => `<div class="mt">${esc(r.topic)}</div>${all.slice(ri * BM.cols.length, (ri + 1) * BM.cols.length).map(ce).join('')}`).join('')}</div>
+      <div class="msns"><b>📱 SNS 계정 ${sT}개 운영 중${wT ? ` · ⏳ MJ 대기 ${wT}개` : ''}</b><small>${zero.length ? `${zero.map(esc).join('·')}은 아직 0개 · ` : ''}칸마다 어디 있는지는 아래 목록</small>
+        <div class="mpf">${PF.map((p, k) => `<div class="${sOn[k] ? '' : 'z'}"><b>${sOn[k]}</b>${esc(p)}${sW[k] ? `<em>⏳${sW[k]}</em>` : ''}</div>`).join('')}</div>
+        <details><summary>SNS 있는 칸 ${where.length}곳 (눌러서 보기)</summary><ul>${where.map((c) => `<li><b>${esc(c.topic)} · ${esc(c.col)}</b><span>${esc(pl(c, 'on') || '—')}${pl(c, 'wait') ? `<em>⏳ ${esc(pl(c, 'wait'))} MJ 대기</em>` : ''}</span></li>`).join('')}</ul></details></div></section>`));
   }
   // 1111 MJ '그전에 공개됐던 영상들 조회수 추적 · 어떤 영상이 많은지 · 왜 많은지 분석'
   const VT = d.vtrack;
