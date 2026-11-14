@@ -153,6 +153,16 @@ details summary{cursor:pointer;color:var(--mute);font-size:13px;font-weight:600;
 .gate button{font:inherit;font-weight:800;font-size:16px;padding:14px;border:0;border-radius:14px;background:var(--pri);color:#fff;cursor:pointer}.err{color:var(--bad);font-size:13px;min-height:1.2em}
 @media (prefers-reduced-motion:no-preference){.pop{animation:pop .45s cubic-bezier(.3,1.5,.5,1) both}@keyframes pop{from{transform:scale(.6);opacity:0}}}
 .mc i.ad{display:block;font-style:normal;font-size:11px;margin-top:2px;opacity:.85}.mc i.ad-on{color:var(--ok);opacity:1;font-weight:600}.mc i.ad-review{color:var(--yel,#e3b341)}.mc i.ad-plan{color:var(--mute)}
+.hmg{display:flex;flex-direction:column;gap:14px}.hm .hd{flex-wrap:wrap}.hs{font-size:12px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--tray);margin-left:4px}.hs-g{color:var(--ok);background:var(--ok-soft)}.hs-y{color:var(--warn);background:var(--warn-soft)}.hs-r{color:var(--bad);background:var(--bad-soft)}
+.hmore{margin-left:auto;font-size:13px;font-weight:800;color:var(--pri);text-decoration:none;padding:4px 2px}
+.hm-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.hv{font-size:18px;font-weight:900;flex:1 1 220px}.hv.warn{color:var(--org)}.hv.ok{color:var(--ok)}
+.hn{display:flex;gap:8px}.hn a{display:flex;flex-direction:column;align-items:center;min-width:72px;padding:6px 10px;border-radius:12px;background:var(--tray);color:var(--mute);font-size:12px;font-weight:700;text-decoration:none}.hn b{font-size:20px;color:var(--ink)}
+.sys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}@media (max-width:760px){.sys{grid-template-columns:repeat(2,minmax(0,1fr))}}.sy{display:flex;flex-direction:column;font-size:13px;font-weight:800;padding:6px 10px;border-radius:10px;background:var(--tray)}.sy small{font-weight:600;color:var(--mute);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sy-y{background:var(--warn-soft)}.sy-r{background:var(--bad-soft)}
+.hm .ytc .bst,.hm .ytc .ac{display:none}.hm .rvs{margin-bottom:0}.hm .fund{margin-bottom:8px}
+.hm .ask small{display:none}.hm .rvs small,.hm .rvs .chg{display:none}.hm .rvs>div{padding:10px 12px}.hm .rvs b{font-size:19px}@media (max-width:760px){.hn{flex:1 1 100%}.hn a{flex:1}}
+.hall{display:block;text-align:right;font-size:13px;font-weight:800;color:var(--pri);text-decoration:none;padding-top:8px}.hempty{margin:0;color:var(--mute)}
+.hl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}.hl li{display:flex;align-items:baseline;gap:8px;font-size:14px;line-height:1.4}.hl li b{flex:none;font-variant-numeric:tabular-nums}.hl li a{color:var(--ink);text-decoration:none}.hl .cdn{color:var(--pri);font-weight:800;font-size:12.5px}.hl em{font-style:normal;color:var(--pri);font-weight:800}
+.dt{flex:none;width:8px;height:8px;border-radius:50%;background:var(--mute);transform:translateY(-1px)}.dt.on{background:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}.dt.nx{background:var(--pri)}.dt.ok{background:var(--ok)}
 </style></head><body>
 <div id="gate" class="gate"><form id="gf"><div class="logo">📋</div><h1>MJ 오늘의 전광판</h1><p>비밀번호를 넣어 주세요. 이 기기에 기억돼요.</p><input id="code" type="password" inputmode="numeric" autocomplete="current-password" aria-label="비밀번호"><button>열기</button><div class="err" id="err"></div></form></div>
 <div id="app" class="wrap" hidden></div>
@@ -337,13 +347,39 @@ function render(d) {
   const CAT = (t) => /할 일 \d|정해 주세요/.test(t) ? 'todo' : /수익|애드센스/.test(t) ? 'rev' : /영상|유튜브|공개·제작/.test(t) ? 'yt' : /블로그|올린 글|칸 지도|방문자/.test(t) ? 'blog' : /달력|예약|해낸 일|진행/.test(t) ? 'cal' : 'stat';
   const tag = (s) => { const h = s.querySelector(':scope > .hd'); s.dataset.c = h ? CAT(h.textContent) : 'stat'; };
   [...app.children].forEach((el) => { if (el.classList.contains('cols')) [...el.children].forEach(tag); else if (el.tagName === 'SECTION') tag(el); else el.dataset.c = 'todo'; });
-  const TB = [['all', '📋 전체'], ['todo', '🙋 할 일', asks.length + T.length], ['rev', '💰 수익'], ['yt', '▶️ 유튜브'], ['blog', '📝 블로그'], ['cal', '🗓️ 일정'], ['stat', '📊 분석'], ['link', '🔗 바로가기'], ['cmt', '💬 댓글', wait]];
+  // 1115 MJ '전체 메뉴 없애고 홈엔 필요한 내용만 · 요약본·사용량 꼭' + '홈만 봐도 어떻게 돌아가는지 한눈에' → 🏠 홈 = 요약 카드 6개 (원본 칸은 각 탭에 그대로, 홈은 복제해서 보여 줌)
+  const HS = { g: '🟢 정상', y: '🟡 확인', r: '🔴 문제' }, worst = (a) => a.includes('r') ? 'r' : a.includes('y') ? 'y' : 'g';
+  const hc = (ic, c, title, st, more, body, cls = '') => { const x = $(`<section class="card hm ${cls}"><div class="hd"><span class="ic ${c}">${ic}</span>${title}<span class="hs hs-${st}">${HS[st]}</span>${more ? `<a class="hmore" href="#${more}">자세히 ›</a>` : ''}</div></section>`); if (typeof body === 'string') x.insertAdjacentHTML('beforeend', body); else body.filter(Boolean).forEach((n) => x.append(n)); return x; };
+  const findSec = (re) => [...app.querySelectorAll('section')].find((x) => { const h = x.querySelector(':scope > .hd'); return h && re.test(h.textContent); });
+  const hm = document.createElement('div'); hm.className = 'hmg'; hm.dataset.c = 'home';
+  // ① 오늘 한 줄 + 시스템 상태
+  const sy = (d.analysis || []).map((a) => [a.area === '오류' ? (a.state === 'up' ? 'g' : 'r') : a.state === 'down' ? 'y' : 'g', a]);
+  hm.append(hc('📋', asks.length ? 'c-org' : 'c-green', '오늘 한눈에', worst(sy.map((x) => x[0])), '', `<div class="hm-top"><div class="hv ${asks.length ? 'warn' : 'ok'}">${asks.length ? `🙋 정해 줄 게 ${asks.length}개 있어요` : '✅ 다 순조로워요'}</div><div class="hn"><a href="#cal"><b class="num">${d.done.length}</b>해낸 일</a><a href="#cal"><b class="num">${left.length}</b>남은 예약</a><a href="#todo"><b class="num">${asks.length}</b>결정 대기</a></div></div>${sy.length ? `<div class="sys">${sy.map(([k, a]) => `<span class="sy sy-${k}" title="${esc(a.title)}">${HS[k].slice(0, 2)} ${esc(a.area)}<small>${esc(a.title)}</small></span>`).join('')}</div>` : ''}`, 'full'));
+  // ② 클로드 사용량 (분석 탭 카드 복제, 전환 기록은 분석 탭에만)
+  const US = findSec(/계정 사용량/);
+  if (US) { const cur = (d.accts || []).find((a) => a.n === d.acct) || {}, lw = d.acct === '1' ? (d.bridge ? 97 : 75) : 99, st = cur.wk >= lw || cur.h5 >= 97 ? 'r' : cur.wk >= lw - 10 || cur.h5 >= 87 ? 'y' : 'g', u = US.cloneNode(true); u.querySelector(':scope > .hd').remove(); u.querySelector('.alog')?.remove();
+    hm.append(hc('🔋', 'c-gray', '클로드 사용량', st, 'stat', [...u.childNodes], 'full')); }
+  // ③ 돈
+  const RVC = app.querySelector('section.rvc');
+  if (RVC) { const ap = (d.revenue || {}).adpost; hm.append(hc('💰', 'c-yel', '수익', ap && ap.login === false ? 'r' : 'g', 'rev', [RVC.querySelector('.fund')?.cloneNode(true), RVC.querySelector('.rvs')?.cloneNode(true)], 'full')); }
+  // ④ 유튜브 채널 카드
+  const YC = app.querySelector('.ytx .ytcs');
+  if (YC) hm.append(hc('▶️', 'c-red', '유튜브 5채널', YC.querySelector('.vd.down') ? 'y' : 'g', 'yt', [YC.cloneNode(true)], 'full'));
+  // ⑤ 결정 3개
+  const AS = [...app.querySelectorAll('section.asks .ask')].slice(0, 3);
+  hm.append(hc('🙋', 'c-org', '정해 주세요', asks.length ? 'y' : 'g', 'todo', AS.length ? [...AS.map((x) => x.cloneNode(true)), $(`<a class="hall" href="#todo">전체 ${asks.length}개 보기 → 할 일 탭 ›</a>`)] : '<p class="hempty">지금은 정할 게 없어요 ✅</p>'));
+  // ⑥ 지금 돌아가는 것 · 다음 예약 · 방금 해낸 일
+  const tsec = (t) => { const [h, m] = t.split(':').map(Number), n = new Date(), x = new Date(n.getFullYear(), n.getMonth(), n.getDate(), h, m); if (x < n) x.setDate(x.getDate() + 1); return Math.floor(x / 1000); };
+  const WK = d.working || [], NX = left.filter((x) => /^\d\d:\d\d$/.test(x.time)).slice(0, 3), DN = [...d.done].filter((x) => x.what).reverse().slice(0, 3), err = sy.some(([k, a]) => a.area === '오류' && k === 'r');
+  hm.append(hc('⚙️', 'c-blue', '지금 돌아가는 것', err ? 'r' : 'g', 'cal', `<ul class="hl">${WK.length ? WK.map((w) => `<li><i class="dt on"></i><b>${esc(w.team || '')}</b>${esc(w.what)}${w.progress != null ? ` <em>${Math.round(w.progress)}%</em>` : ''}</li>`).join('') : '<li><i class="dt"></i>긴 작업 없음 · 자동 예약만 돌아요</li>'}${NX.map((x, i) => `<li><i class="dt nx"></i><b>${esc(x.time)}</b>${esc(x.what)}${i === 0 ? ` <span class="cdn" data-t="${tsec(x.time)}"></span>` : ''}</li>`).join('')}</ul><div class="hd" style="font-size:13px;margin:8px 0 2px">✅ 방금 해낸 일</div><ul class="hl">${DN.map((x) => `<li><i class="dt ok"></i><b>${esc(x.time)}</b>${x.link ? `<a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.what)}</a>` : esc(x.what)}</li>`).join('') || '<li>아직 없어요</li>'}</ul>`));
+  app.prepend(hm);
+  const TB = [['home', '🏠 홈'], ['todo', '🙋 할 일', asks.length + T.length], ['rev', '💰 수익'], ['yt', '▶️ 유튜브'], ['blog', '📝 블로그'], ['cal', '🗓️ 일정'], ['stat', '📊 분석'], ['link', '🔗 바로가기'], ['cmt', '💬 댓글', wait]];
   const tabs = $(`<div class="tabs" role="tablist">${TB.map(([k, l, n]) => `<button type="button" role="tab" data-t="${k}"${n ? ` aria-label="${l.slice(3)} ${n}개"` : ''}>${l}${n ? `<em>${n}</em>` : ''}</button>`).join('')}</div>`);
-  const show = (t) => { if (!TB.some(([k]) => k === t)) t = 'all'; tabs.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', b.dataset.t === t)); app.hidden = t === 'cmt' || t === 'link'; cmt.hidden = t !== 'cmt'; lnk.hidden = t !== 'link'; app.classList.toggle('f', t !== 'all');
-    app.querySelectorAll('[data-c]').forEach((el) => { el.hidden = t !== 'all' && el.dataset.c !== t; }); app.querySelectorAll('.cols').forEach((x) => { x.hidden = [...x.children].every((c) => c.hidden); }); };
-  tabs.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; history.replaceState(null, '', b.dataset.t === 'all' ? location.pathname + location.search : '#' + b.dataset.t); show(b.dataset.t); window.scrollTo(0, 0); });
+  const show = (t) => { if (!TB.some(([k]) => k === t)) t = 'home'; tabs.querySelectorAll('button').forEach((b) => b.setAttribute('aria-selected', b.dataset.t === t)); app.hidden = t === 'cmt' || t === 'link'; cmt.hidden = t !== 'cmt'; lnk.hidden = t !== 'link'; app.classList.toggle('f', true);
+    app.querySelectorAll('[data-c]').forEach((el) => { el.hidden = el.dataset.c !== t; }); app.querySelectorAll('.cols').forEach((x) => { x.hidden = [...x.children].every((c) => c.hidden); }); };
+  tabs.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; history.replaceState(null, '', b.dataset.t === 'home' ? location.pathname + location.search : '#' + b.dataset.t); show(b.dataset.t); window.scrollTo(0, 0); });
   cmt.addEventListener('click', (e) => { const x = e.target.closest('.cm-x'); if (x) x.classList.toggle('open'); });
-  root.insertBefore(tabs, app); root.append(cmt); root.append(lnk); show(location.hash.slice(1)); if (window.cdTick) cdTick();
+  root.insertBefore(tabs, app); root.append(cmt); root.append(lnk); show(location.hash.slice(1)); window.onhashchange = () => { show(location.hash.slice(1)); window.scrollTo(0, 0); }; if (window.cdTick) cdTick();
 }
 async function go(code, quiet) {
   try { const d = await open(code); try { localStorage.setItem('mjb_code', code); } catch (e) {} document.getElementById('gate').hidden = true; document.getElementById('err').textContent = ''; document.getElementById('app').hidden = false; render(d); return true; }
