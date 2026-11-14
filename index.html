@@ -124,6 +124,7 @@ details summary{cursor:pointer;color:var(--mute);font-size:13px;font-weight:600;
 .gate input{font:inherit;font-size:24px;font-weight:800;text-align:center;letter-spacing:8px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}
 .gate button{font:inherit;font-weight:800;font-size:16px;padding:14px;border:0;border-radius:14px;background:var(--pri);color:#fff;cursor:pointer}.err{color:var(--bad);font-size:13px;min-height:1.2em}
 @media (prefers-reduced-motion:no-preference){.pop{animation:pop .45s cubic-bezier(.3,1.5,.5,1) both}@keyframes pop{from{transform:scale(.6);opacity:0}}}
+.mc i.ad{display:block;font-style:normal;font-size:11px;margin-top:2px;opacity:.85}.mc i.ad-on{color:var(--ok);opacity:1;font-weight:600}.mc i.ad-review{color:var(--yel,#e3b341)}.mc i.ad-plan{color:var(--mute)}
 </style></head><body>
 <div id="gate" class="gate"><form id="gf"><div class="logo">📋</div><h1>MJ 오늘의 전광판</h1><p>비밀번호를 넣어 주세요. 이 기기에 기억돼요.</p><input id="code" type="password" inputmode="numeric" autocomplete="current-password" aria-label="비밀번호"><button>열기</button><div class="err" id="err"></div></form></div>
 <div id="app" class="wrap" hidden></div>
@@ -229,7 +230,7 @@ function render(d) {
       : ['ok', '🟢 밀린 칸 없어요', hold ? `남은 ${hold}칸은 ${HOLD} 다시 시작해요` : '새 칸이 생기면 여기 떠요'];
     const SEG = [['운영 중', 'var(--ok)', on], ['곧 시작', 'var(--pri)', now.length + soon.length], ['밀림', 'var(--bad)', late.length], ['날짜 미정', 'var(--org)', todo], [`멈춤(${HOLD})`, 'color-mix(in srgb,var(--mute) 45%,var(--card))', hold]];
     const LB = { on: (c) => [c.posts != null ? fmt(c.posts) + '글' : '✅', '운영 중'], today: () => ['오늘', '시작'], soon: (c) => [c.date, '시작 예정'], late: (c) => ['밀림', c.date + ' 예정'], hold: () => ['', '⏸ 멈춤'], todo: () => ['＋', '날짜 미정'], na: () => ['', '안 함'] };
-    const ce = (c) => { const [a, b] = LB[c.k](c), n = (c.sns || []).filter((v) => v === 'on').length, w = (c.sns || []).filter((v) => v === 'wait').length; return `<div class="mc k-${c.k}">${a ? `<b>${esc(a)}</b>` : ''}<small>${esc(b)}</small>${n || w ? `<em>${n ? '📱' + n : ''}${n && w ? ' ' : ''}${w ? '⏳' + w : ''}</em>` : ''}</div>`; };
+    const ce = (c) => { const [a, b] = LB[c.k](c), n = (c.sns || []).filter((v) => v === 'on').length, w = (c.sns || []).filter((v) => v === 'wait').length; const ad = c.ads ? (c.ads.st === 'on' ? '💰 애드센스 ✅' : c.ads.st === 'review' ? '💰 심사 중' : '💰 ' + (c.ads.date || '') + ' 신청') : ''; return `<div class="mc k-${c.k}">${a ? `<b>${esc(a)}</b>` : ''}<small>${esc(b)}</small>${ad ? `<i class="ad ad-${c.ads.st}">${esc(ad)}</i>` : ''}${n || w ? `<em>${n ? '📱' + n : ''}${n && w ? ' ' : ''}${w ? '⏳' + w : ''}</em>` : ''}</div>`; };   // 1114 MJ 애드센스 날짜·달린 것
     const PF = BM.platforms, sOn = PF.map((_, k) => all.filter((c) => (c.sns || [])[k] === 'on').length), sW = PF.map((_, k) => all.filter((c) => (c.sns || [])[k] === 'wait').length), sT = sOn.reduce((a, b) => a + b, 0), wT = sW.reduce((a, b) => a + b, 0), zero = PF.filter((_, k) => !sOn[k]);
     const where = all.filter((c) => (c.sns || []).some(Boolean)), pl = (c, v) => PF.filter((_, k) => c.sns[k] === v).join('·');
     app.append($(`<section class="card"><div class="hd"><span class="ic c-green">🗺️</span>채울 칸 지도<small>목표 = 모든 칸 채우기</small></div>
@@ -239,7 +240,7 @@ function render(d) {
       <div class="mlg">${SEG.filter((x) => x[2] || x[0] === '밀림').map((x) => `<span style="--c:${x[1]}">${esc(x[0])}<b>${x[2]}</b></span>`).join('')}</div>
       ${late.length ? `<div class="mlate"><b>🔴 밀린 칸 — 제 차례</b>${grp(late).map((g) => `<div class="mrow"><span class="mb">${-day(g.date)}일 밀림</span><div><b>${esc(g.topic)} · ${g.cols.map(esc).join('·')}</b><small>${esc(g.date)} 시작 예정이었어요 → 블로그 열고 첫 글 3개</small></div></div>`).join('')}</div>` : ''}
       ${(BM.mj || []).length ? `<div class="mmj"><b>🙋 MJ 차례 — 이것만 만들어 주면 칸이 채워져요</b><small>텔레그램에 "○번 알려줘" → 한 단계씩 안내해요</small><ol>${BM.mj.map((m) => `<li><i>${m.no != null ? m.no : '·'}</i><div><b>${esc(m.what)} 만들기</b><small>→ ${esc(m.topic)} · ${esc(m.col)} SNS 칸</small></div></li>`).join('')}</ol></div>` : ''}
-      <p class="mkey">칸 = 블로그 상태 · 📱 SNS 계정 수 · ⏳ MJ 계정 대기</p>
+      <p class="mkey">칸 = 블로그 상태 · 💰 애드센스(✅ 달림·심사 중·신청일) · 📱 SNS 계정 수 · ⏳ MJ 계정 대기</p>
       <div class="mp"><div></div>${BM.cols.map((c) => `<div class="mh">${esc(c)}</div>`).join('')}${BM.rows.map((r, ri) => `<div class="mt">${esc(r.topic)}</div>${all.slice(ri * BM.cols.length, (ri + 1) * BM.cols.length).map(ce).join('')}`).join('')}</div>
       <div class="msns"><b>📱 SNS 계정 ${sT}개 운영 중${wT ? ` · ⏳ MJ 대기 ${wT}개` : ''}</b><small>${zero.length ? `${zero.map(esc).join('·')}은 아직 0개 · ` : ''}칸마다 어디 있는지는 아래 목록</small>
         <div class="mpf">${PF.map((p, k) => `<div class="${sOn[k] ? '' : 'z'}"><b>${sOn[k]}</b>${esc(p)}${sW[k] ? `<em>⏳${sW[k]}</em>` : ''}</div>`).join('')}</div>
