@@ -164,6 +164,11 @@ details summary{cursor:pointer;color:var(--mute);font-size:13px;font-weight:600;
 .hall{display:block;text-align:right;font-size:13px;font-weight:800;color:var(--pri);text-decoration:none;padding-top:8px}.hempty{margin:0;color:var(--mute)}
 .hl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}.hl li{display:flex;align-items:baseline;gap:8px;font-size:14px;line-height:1.4}.hl li b{flex:none;font-variant-numeric:tabular-nums}.hl li a{color:var(--ink);text-decoration:none}.hl .cdn{color:var(--pri);font-weight:800;font-size:12.5px}.hl em{font-style:normal;color:var(--pri);font-weight:800}
 i.dt{flex:none;width:8px;height:8px;border-radius:50%;background:var(--mute);transform:translateY(-1px)}i.dt.on{background:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}i.dt.nx{background:var(--pri)}i.dt.ok{background:var(--ok)}
+.pcg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}.pc{background:var(--tray);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}.pc.off{opacity:.62}
+.pc .t{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;flex-wrap:wrap}.pc .t span{min-width:0}.pc .st{margin-left:auto;font-size:12px;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.st-work{color:var(--ok);background:var(--ok-soft)}.st-idle{color:var(--mute);background:var(--card)}.st-off{color:var(--bad);background:var(--bad-soft)}.st-human{color:var(--warn);background:var(--warn-soft)}
+.pc .now{font-size:14px;font-weight:700;line-height:1.4;overflow-wrap:anywhere}.pc .now.dim{color:var(--mute);font-weight:600}.pc .rl{display:flex;flex-wrap:wrap;gap:4px}.pc .rl i{font-style:normal;font-size:11.5px;font-weight:700;color:var(--mute);background:var(--card);padding:2px 7px;border-radius:8px}
+.pc .ft{font-size:11.5px;color:var(--mute);font-weight:600;font-variant-numeric:tabular-nums}.pc .pcb{height:4px;border-radius:4px;background:var(--card);overflow:hidden}.pc .pcb i{display:block;height:100%;background:var(--pri);border-radius:4px}
 </style></head><body>
 <div id="gate" class="gate"><form id="gf"><div class="logo">📋</div><h1>MJ 오늘의 전광판</h1><p>비밀번호를 넣어 주세요. 이 기기에 기억돼요.</p><input id="code" type="password" inputmode="numeric" autocomplete="current-password" aria-label="비밀번호"><button>열기</button><div class="err" id="err"></div></form></div>
 <div id="app" class="wrap" hidden></div>
@@ -403,5 +408,32 @@ document.addEventListener('click', (e) => { const g = e.target.closest && e.targ
 <script>/* 1115 MJ '5시간이 언제 리셋되는지 디테일하게' — 리셋까지 남은 시간, 1분마다 */
 window.cdTick = function () { const now = Date.now() / 1000; document.querySelectorAll('.cdn').forEach((e) => { const x = +e.dataset.t - now; if (x <= 0) { e.textContent = e.dataset.pre ? '리셋됨 — 다음 갱신 때 0%부터' : '(리셋됨 — 다음 갱신 때 0%부터)'; e.classList.add('past'); return; } const D = Math.floor(x / 86400), h = Math.floor((x % 86400) / 3600), m = Math.floor((x % 3600) / 60), dh = D ? `${D}일 ${h}시간` : ''; const tx = dh || `${h ? h + '시간 ' : ''}${m}분`; e.textContent = e.dataset.pre ? `${e.dataset.pre} ${tx}` : `(${tx} 뒤)`; }); }
 cdTick(); setInterval(cdTick, 60e3); new MutationObserver(() => cdTick()).observe(document.getElementById('app'), { childList: true });
+</script>
+<script>/* 1122 MJ '컴퓨터 별로 어떤 작업을 하고 있고 주로 하는 작업이 뭔지 · 작업중이면 작업중 표시' — ~/bin/board/pcstat.mjs 가 4분마다 'pc' 브랜치에 암호화해 올림 → 2분마다 읽어 홈 두 번째 칸에 그림 */
+(() => {
+  const API = 'https://api.github.com/repos/Deltoy/board/contents/pc.enc.json?ref=pc', RAW = 'https://raw.githubusercontent.com/Deltoy/board/pc/pc.enc.json';
+  let K = '', P = null; const _o = open; open = function (c) { K = c; return _o(c); };   // 비밀번호는 전광판 열 때 받은 것 그대로
+  const dec = async (e) => { const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(K), 'PBKDF2', false, ['deriveKey']); const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(e.salt), iterations: e.iter, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']); return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(e.iv) }, key, b64(e.data)))); };
+  async function load() { if (!K) return; let e;
+    try { const r = await fetch(API, { cache: 'no-cache' }); if (!r.ok) throw 0; e = JSON.parse(new TextDecoder().decode(b64((await r.json()).content.replace(/\s/g, '')))); }   // API = 바로 최신(시간당 60번 한도)
+    catch (x) { try { e = await (await fetch(RAW)).json(); } catch (y) { return; } }   // 한도 넘으면 raw(최대 5분 늦음)
+    try { P = await dec(e); } catch (x) { return; } draw(); }
+  const hm2 = (t) => { const d = new Date(t); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+  const mins = (s) => s < 60 ? '방금' : s < 3600 ? Math.floor(s / 60) + '분 전' : Math.floor(s / 3600) + '시간 전';
+  function draw() { const hm = document.querySelector('.hmg'); if (!hm || !P) return;
+    const age = (Date.now() - new Date(P.at)) / 1e3, stale = age > 15 * 60, nWork = P.pcs.filter((p) => p.on && p.jobs.length).length;
+    const card = (p) => { const human = p.store && p.on && p.idle != null && p.idle + age < 1800, st = !p.on ? ['off', p.sale ? '🔴 꺼짐 · 판매 준비' : '🔴 꺼짐 (연결 안 됨)'] : p.jobs.length ? ['work', '🟢 작업 중'] : ['idle', '⚪ 쉬는 중'];
+      return `<div class="pc${p.on ? '' : ' off'}"><div class="t"><span>${p.ic} ${esc(p.name)}</span><em class="st st-${st[0]}">${st[1]}</em>${human ? `<em class="st st-human" title="키보드·마우스 마지막 입력">👤 사람이 사용 중 (${mins(p.idle + age)} 입력)</em>` : ''}</div>`
+        + `<div class="now${p.jobs && p.jobs.length ? '' : ' dim'}">${p.on ? (p.jobs.length ? '지금: ' + p.jobs.map(esc).join(' · ') : '지금 하는 작업 없음') : '응답 없음 — 꺼졌거나 잠자기'}</div>`
+        + `<div class="rl">${p.role.map((r) => `<i>${esc(r)}</i>`).join('')}</div>`
+        + (p.on && p.cpu != null ? `<div class="pcb" title="CPU ${p.cpu}%"><i style="width:${Math.max(2, Math.min(100, p.cpu))}%"></i></div>` : '')
+        + `<div class="ft">${p.on && p.cpu != null ? 'CPU ' + p.cpu + '% · ' : ''}마지막 확인 ${hm2(P.at)}</div></div>`; };
+    const sec = $(`<section class="card hm" id="pcs" data-c="home"><div class="hd"><span class="ic c-blue">🖥️</span>컴퓨터 상태<span class="hs ${stale ? 'hs-y' : 'hs-g'}">${stale ? '🟡 ' + mins(age) + ' 정보' : nWork ? '🟢 ' + nWork + '대 작업 중' : '⚪ 모두 쉬는 중'}</span><small>4분마다 확인 · 주로 하는 일은 회색 칸</small></div><div class="pcg">${P.pcs.map(card).join('')}</div></section>`);
+    const old = document.getElementById('pcs'); if (old) old.replaceWith(sec); else hm.insertBefore(sec, hm.children[1] || null); }
+  const _r = render; render = function (d) { _r(d); draw(); };   // 10분마다 전광판 다시 그려도 칸 유지
+  setInterval(() => { if (!document.hidden) load(); }, 120e3); setInterval(draw, 60e3);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+  const w = setInterval(() => { if (!K) try { K = localStorage.getItem('mjb_code') || ''; } catch (x) {} if (K) { clearInterval(w); load(); } }, 500);
+})();
 </script>
 </body></html>
