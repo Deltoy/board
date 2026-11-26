@@ -252,6 +252,11 @@ function render(d) {
   if (CP || SCV || RV.adpost) {
     const won = (n) => n == null ? '—' : fmt(n) + '원', cd = CP ? CP.days.slice(-15, -1) : [], y = cd[cd.length - 1], b = cd[cd.length - 2], dd = y && b ? y.commission - b.commission : null;
     const w7 = cd.slice(-7).reduce((t, x) => t + x.commission, 0), scm = SCV ? SCV.accounts.reduce((t, a) => t + a.month, 0) : null, scc = SCV ? SCV.accounts.reduce((t, a) => t + a.clicks30, 0) : 0;
+    // 1126 MJ '여기 그래프에 네이버 쇼핑커넥트 수익 그래프는 없네' — 쿠팡·애드포스트만 그래프가 있었음. 계정별 날짜를 더해 하루 매출 막대로.
+    const scDays = (() => { if (!SCV || !SCV.accounts) return [];
+      const m = new Map();
+      for (const a of SCV.accounts) for (const x of (a.days || [])) m.set(x.date, (m.get(x.date) || 0) + (+x.sales || 0));
+      return [...m.entries()].sort((a, b) => a[0] < b[0] ? -1 : 1).map(([date, sales]) => ({ date, sales })).slice(-14); })();
     const W2 = 640, H2 = 200, m2 = 30, chart = (rows, key, col, unit) => { const bw2 = (W2 - 16) / Math.max(1, rows.length), mx2 = Math.max(1, ...rows.map((x) => x[key]));
       return rows.map((x, i) => { const v = x[key], h = (H2 - m2 - 26) * v / mx2, X = 8 + i * bw2 + bw2 * 0.14, last = i === rows.length - 1, cx = (X + bw2 * 0.36).toFixed(1), k = v >= 10000 ? (v / 10000).toFixed(1) + '만' : fmt(v);
         return `<rect x="${X.toFixed(1)}" y="${(H2 - m2 - h).toFixed(1)}" width="${(bw2 * 0.72).toFixed(1)}" height="${Math.max(2, h).toFixed(1)}" rx="5" fill="${last ? col : v ? `color-mix(in srgb,${col} 40%,var(--line))` : 'var(--line)'}"><title>${x.date} · ${fmt(v)}${unit}${x.orders != null ? ' · 주문 ' + x.orders + '건' : ''}${x.views != null ? ' · 노출 ' + fmt(x.views) + ' · 클릭 ' + x.clicks : ''}</title></rect>${last || i % 2 === 1 ? `<text x="${cx}" y="${H2 - 6}" text-anchor="middle">${+x.date.slice(8)}일</text>` : ''}${v ? `<text x="${cx}" y="${(H2 - m2 - h - 6).toFixed(1)}" text-anchor="middle" style="${last ? `fill:${col};font-weight:900;font-size:20px` : 'font-weight:700'}">${k}</text>` : ''}`; }).join(''); };
@@ -265,7 +270,7 @@ function render(d) {
       <div><span>쿠팡 이번 달</span><b>${won(CP && CP.month)}</b><small>최근 7일 ${won(w7)}</small></div>
       <div><span>쇼핑 커넥트 이번 달</span><b>${won(scm)}</b><small>${SCV ? `클릭 ${fmt(scc)} · 블로그 ${SCV.accounts.length}곳 합` : '읽는 중'}</small></div>
       ${ay ? `<div><span>애드포스트 어제 (${+ay.date.slice(5, 7)}/${+ay.date.slice(8)})</span><b>${won(ay.revenue)}</b>${add == null ? '' : `<span class="chg ${ud(add)}">${add ? sg(add) + '원' : '그대로'}</span><small>그저께보다 · 이번 달 ${won(AP.month)}</small>`}</div>` : `<div class="off"><span>애드포스트</span><b>${AP && AP.login === false ? '로그인 풀림' : '연결 중'}</b><small>${AP && AP.login === false ? '맥 크롬(애드포스트 창)에서 다시 로그인' : '하루 1번 자동으로 읽어요'}</small></div>`}
-    </div>${afl}${cd.length ? `<div class="hd" style="font-size:14px;margin:4px 0 4px">쿠팡 파트너스 하루 수익<small>최근 2주</small></div><svg viewBox="0 0 ${W2} ${H2}" role="img" aria-label="쿠팡 파트너스 최근 2주 날짜별 수익 막대그래프">${bars2}</svg>` : ''}${ad.length ? `<div class="hd" style="font-size:14px;margin:10px 0 4px">애드포스트 하루 수익<small>최근 2주 · 잔액 ${won(AP.bal)}</small></div><svg viewBox="0 0 ${W2} ${H2}" role="img" aria-label="애드포스트 최근 2주 날짜별 수익 막대그래프">${chart(ad, 'revenue', '#03c75a', '원')}</svg>` : ''}</section>`));
+    </div>${afl}${cd.length ? `<div class="hd" style="font-size:14px;margin:4px 0 4px">쿠팡 파트너스 하루 수익<small>최근 2주</small></div><svg viewBox="0 0 ${W2} ${H2}" role="img" aria-label="쿠팡 파트너스 최근 2주 날짜별 수익 막대그래프">${bars2}</svg>` : ''}${ad.length ? `<div class="hd" style="font-size:14px;margin:10px 0 4px">애드포스트 하루 수익<small>최근 2주 · 잔액 ${won(AP.bal)}</small></div><svg viewBox="0 0 ${W2} ${H2}" role="img" aria-label="애드포스트 최근 2주 날짜별 수익 막대그래프">${chart(ad, 'revenue', '#03c75a', '원')}</svg>` : ''}${scDays.length ? `<div class="hd" style="font-size:14px;margin:10px 0 4px">쇼핑 커넥트 하루 매출<small>최근 2주 · 블로그 ${SCV.accounts.length}곳 합 · 수수료는 이 중 일부</small></div><svg viewBox="0 0 ${W2} ${H2}" role="img" aria-label="네이버 쇼핑 커넥트 최근 2주 날짜별 매출 막대그래프">${chart(scDays, 'sales', '#2db400', '원')}</svg>` : ''}</section>`));
   }
   const C = d.calendar;
   if (C && C.events) {
